@@ -91,13 +91,13 @@ class ToWatchView(views.APIView):
     def get(self, request, format=None):
         contents = ToWatchContent.objects.all()
         serializer = ToWatchSerializer(contents, many=True)
-        return Response({'message': '정주행할 OTT 목록 조회 성공', 'data': serializer.data})
+        return Response({'message': '정주행할 컨텐츠 목록 조회 성공', 'data': serializer.data})
 
     def post(self, request, format=None):
         serializer = ToWatchSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({'message': '정주행할 OTT 목록 추가 성공', 'data': serializer.data})
+            return Response({'message': '정주행할 컨텐츠 목록 추가 성공', 'data': serializer.data})
         return Response(serializer.errors)
 
     def put(self, request, pk, format=None):
@@ -105,7 +105,7 @@ class ToWatchView(views.APIView):
         serializer = ToWatchContent(content, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({'message': '정주행할 OTT 목록 수정 성공', 'data': serializer.data})
+            return Response({'message': '정주행할 컨텐츠 목록 수정 성공', 'data': serializer.data})
         return Response(serializer.errors)
 
     def delete(self, request, pk, format=None):
