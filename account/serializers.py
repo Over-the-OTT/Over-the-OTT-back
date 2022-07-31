@@ -15,3 +15,21 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
 
         return user
+
+
+class UserLoginSerializer(serializers.Serializer):
+    email = serializers.EmailField(max_length=64)
+    password = serializers.CharField(max_length=128, write_only=True)
+
+    def validate(self, data): 
+        email = data.get("email", None)
+        password = data.get("password", None)
+
+        if User.objects.filter(email=email).exists():
+            user = User.objects.get(email=email)
+            if not user.check_password(password):
+                raise serializers.ValidationError()
+            else:
+                return user
+        else:
+            raise serializers.ValidationError()
