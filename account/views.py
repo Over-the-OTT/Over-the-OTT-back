@@ -49,3 +49,19 @@ class SubscribingOTTView(views.APIView):
         otts = SubscribingOTT.objects.filter(user=request.user)
         serializer = SubscribingOTTSerializer(otts, many=True)
         return Response(serializer.data)
+
+    def put(self, request):
+        data = request.data
+        instances = []
+        for ott in data:
+            obj = get_object_or_404(SubscribingOTT, id=ott['id'])
+            obj.id = ott['id']
+            obj.user = request.user
+            obj.fee = ott['fee']
+            obj.start_date = ott['start_date']
+            obj.share = ott['share']
+            obj.save()
+            instances.append(obj)
+        serializer = OTTDetailSerializer(
+            instances, many=True, partial=True)
+        return Response(serializer.data)
