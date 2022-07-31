@@ -21,7 +21,7 @@ class UserLoginSerializer(serializers.Serializer):
     email = serializers.EmailField(max_length=64)
     password = serializers.CharField(max_length=128, write_only=True)
 
-    def validate(self, data): 
+    def validate(self, data):
         email = data.get("email", None)
         password = data.get("password", None)
 
@@ -33,3 +33,15 @@ class UserLoginSerializer(serializers.Serializer):
                 return user
         else:
             raise serializers.ValidationError()
+
+
+class SubscribingOTTSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SubscribingOTT
+        fields = ['user', 'ott']
+
+
+class OTTDetailSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SubscribingOTT
+        fields = ['id', 'user', 'ott', 'fee', 'start_date', 'share']

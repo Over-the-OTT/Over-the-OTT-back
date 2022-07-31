@@ -1,7 +1,11 @@
-from django.shortcuts import render
+from django.forms import ValidationError
+from django.shortcuts import get_object_or_404, render
 from .serializers import *
-from rest_framework import views
+from .models import *
+from rest_framework import views, generics
 from rest_framework.response import Response
+from rest_framework import status
+from django.contrib.auth import logout
 
 # Create your views here.
 
@@ -22,3 +26,26 @@ class LoginView(views.APIView):
         if serializer.is_valid():
             return Response({'message': "로그인 성공", 'data': serializer.data})
         return Response({'message': "로그인 실패", 'data': serializer.errors})
+
+
+class LogoutView(views.APIView):
+    def get(self, request, format=None):
+        logout(request)
+        return Response({'message': "로그아웃 성공"})
+
+
+class SubscribingOTTView(views.APIView):
+
+    def post(self, request):
+        data = request.data
+        serializer = SubscribingOTTSerializer(
+            data=data, many=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': '구독 중인 OTT 생성 성공', 'data': serializer.data})
+        return Response({'message': '구독 중인 OTT 생성 실패', 'error': serializer.errors})
+
+    def get(self, request):
+        otts = SubscribingOTT.objects.filter(user=request.user)
+        serializer = SubscribingOTTSerializer(otts, many=True)
+        return Response(serializer.data)
