@@ -46,7 +46,7 @@ class MovieSearchView(views.APIView):
             result['provider'] = provider_list
             data.append(result)
             
-        return Response({'message': '영화 목록 조회 성공', 'data': data}, status=HTTP_200_OK)
+        return Response({'message': '영화 목록 검색 성공', 'data': data}, status=HTTP_200_OK)
     
     def post(self, request):
         movie_data = {
@@ -121,7 +121,7 @@ class TVSearchView(views.APIView):
 
             data.append(result)
 
-        return Response({'message': 'TV 목록 조회 성공', 'data': data}, status=HTTP_200_OK)
+        return Response({'message': 'TV 목록 검색 성공', 'data': data}, status=HTTP_200_OK)
     
     def post(self, request):
         tv_data = {
@@ -150,9 +150,9 @@ class TVSearchView(views.APIView):
                     episode_serializer.save()
 
 
-            return Response({'message': '드라마 저장 성공', 'data': serializer.data}, status=HTTP_200_OK)
+            return Response({'message': 'TV 저장 성공', 'data': serializer.data}, status=HTTP_200_OK)
         else:
-            return Response({'message': '드라마 저장 실패'}, serializer.errors, status=HTTP_400_BAD_REQUEST)
+            return Response({'message': 'TV 저장 실패'}, serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 
 class MovieListView(views.APIView):
@@ -163,7 +163,7 @@ class MovieListView(views.APIView):
         watching_movie_serializer = MovieListSerializer(watching_movies, many=True)
         watched_movie_serializer = MovieListSerializer(watched_movies, many=True)
 
-        return Response({'message': '체크리스트 조회 성공', 'data': {'watching': watching_movie_serializer.data, 'watched': watched_movie_serializer.data}}, status=HTTP_200_OK)
+        return Response({'message': '영화 체크리스트 조회 성공', 'data': {'watching': watching_movie_serializer.data, 'watched': watched_movie_serializer.data}}, status=HTTP_200_OK)
 
 
 class MovieDetailView(views.APIView):
@@ -171,7 +171,7 @@ class MovieDetailView(views.APIView):
         movie = get_object_or_404(MovieContent, pk=pk)
         movie_serializer = MovieSerializer(movie)
 
-        return Response({'message': '체크리스트 조회 성공', 'data': movie_serializer.data}, status=HTTP_200_OK)
+        return Response({'message': '영화 체크리스트 상세 조회 성공', 'data': movie_serializer.data}, status=HTTP_200_OK)
 
 
 class TVListView(views.APIView):
@@ -182,7 +182,7 @@ class TVListView(views.APIView):
         watching_tv_serializer = MovieListSerializer(watching_tv, many=True)
         watched_tv_serializer = MovieListSerializer(watched_tv, many=True)
 
-        return Response({'message': '체크리스트 조회 성공', 'data': {'watching': watching_tv_serializer.data, 'watched': watched_tv_serializer.data}}, status=HTTP_200_OK)
+        return Response({'message': 'TV 체크리스트 조회 성공', 'data': {'watching': watching_tv_serializer.data, 'watched': watched_tv_serializer.data}}, status=HTTP_200_OK)
 
 
 class TVDetailView(views.APIView):
@@ -190,5 +190,5 @@ class TVDetailView(views.APIView):
         tv = get_object_or_404(TVContent, pk=pk)
         tv_seriallizer = TVDetailSerializer(tv)
 
-        return Response({'message': '드라마 상세 조회 성공', 'data': tv_seriallizer.data}, status=HTTP_200_OK)
+        return Response({'message': 'TV 체크리스트 상세 조회 성공', 'data': tv_seriallizer.data}, status=HTTP_200_OK)
 
