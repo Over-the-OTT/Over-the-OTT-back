@@ -12,5 +12,5 @@ class UserAdmin(admin.ModelAdmin):
 
 @admin.register(SubscribingOTT)
 class OTTAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'ott', 'fee', 'start_date', 'share']
+    list_display = ['id', 'user', 'ott', 'fee', 'pay_date', 'share']
     list_display_linkes = ['id', 'ott']
