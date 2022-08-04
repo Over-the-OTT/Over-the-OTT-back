@@ -172,6 +172,16 @@ class MovieDetailView(views.APIView):
         movie_serializer = MovieSerializer(movie)
 
         return Response({'message': '영화 체크리스트 상세 조회 성공', 'data': movie_serializer.data}, status=HTTP_200_OK)
+    
+    def post(self, request, pk):
+        movie_id = request.data.get('movie_id')
+        movie = get_object_or_404(MovieContent, pk=movie_id)
+
+        movie.is_finished=True
+        movie.save()
+
+        movie_serializer = MovieSerializer(movie)
+        return Response({'message': '영화 시청 기록 저장 성공', 'data': movie_serializer.data})
 
 
 class TVListView(views.APIView):
