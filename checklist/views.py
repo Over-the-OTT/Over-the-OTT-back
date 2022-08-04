@@ -130,7 +130,7 @@ class TVSearchView(views.APIView):
             'tmdb_id': request.data.get('tmdb_id'),
             'poster': request.data.get('poster'),
             'season': request.data.get('season'),
-            'episode': request.data.get('episode'),
+            'total_episode': request.data.get('total_episode'),
             'provider': request.data.get('provider'),
             'runtime': request.data.get('episode_run_time')
         }
@@ -142,7 +142,7 @@ class TVSearchView(views.APIView):
             
             tv_id = serializer.data['id']  
 
-            for i in range(serializer.data['episode']):
+            for i in range(serializer.data['total_episode']):
                 episode_data = {'tv': tv_id, 'episode_num': i+1}
                 episode_serializer = EpisodeSerializer(data=episode_data)
 
@@ -192,3 +192,21 @@ class TVDetailView(views.APIView):
 
         return Response({'message': 'TV 체크리스트 상세 조회 성공', 'data': tv_seriallizer.data}, status=HTTP_200_OK)
 
+    def post(self, request, pk):
+        episode_id = request.data.get('episode_id')
+        episode = get_object_or_404(Episode, pk=episode_id)
+
+        episode.is_finished=True
+        episode.save()
+
+        tv = get_object_or_404(TVContent, pk=pk)
+        tv.episode_status += 1
+
+        if tv.total_episode == tv.episode_status:
+            tv.is_finished=True
+
+        tv.save()
+
+        episode_serializer = EpisodeSerializer(episode)
+
+        return Response({'message': 'TV 시청 기록 저장 성공', 'data': episode_serializer.data})
