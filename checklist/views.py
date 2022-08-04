@@ -10,44 +10,52 @@ from checklist.models import MovieContent, TVContent
 from overtheott.settings import TMDB_API_KEY
 from .serializers import *
 
-class MovieSearchView(views.APIView):    
+
+class MovieSearchView(views.APIView):
     def get(self, request):
-        api_key=TMDB_API_KEY
-        keyword=request.GET.get('keyword', None)
+        api_key = TMDB_API_KEY
+        keyword = request.GET.get('keyword', None)
 
         if not keyword:
-            list_url="https://api.themoviedb.org/3/movie/popular?api_key="+api_key+"&language=ko-KR"
+            list_url = "https://api.themoviedb.org/3/movie/popular?api_key=" + \
+                api_key+"&language=ko-KR"
         else:
-            list_url = "https://api.themoviedb.org/3/search/movie?api_key="+api_key+"&language=ko-KR&query="+keyword
+            list_url = "https://api.themoviedb.org/3/search/movie?api_key=" + \
+                api_key+"&language=ko-KR&query="+keyword
         list_response = requests.get(list_url).json()['results']
-        
-        data = []    
+
+        data = []
 
         for l in list_response:
             tmdb_id = str(l['id'])
-            detail_url = "https://api.themoviedb.org/3/movie/"+tmdb_id+"?api_key="+api_key+"&language=ko-KR"
+            detail_url = "https://api.themoviedb.org/3/movie/" + \
+                tmdb_id+"?api_key="+api_key+"&language=ko-KR"
             detail_response = requests.get(detail_url).json()
-            
-            provider_url = "https://api.themoviedb.org/3/movie/"+tmdb_id+"/watch/providers?api_key="+api_key
-            
+
+            provider_url = "https://api.themoviedb.org/3/movie/" + \
+                tmdb_id+"/watch/providers?api_key="+api_key
+
             try:
-                provider_response = requests.get(provider_url).json()['results']['KR']['flatrate']
+                provider_response = requests.get(provider_url).json()[
+                    'results']['KR']['flatrate']
                 provider_list = []
                 for p in provider_response:
                     provider_list.append(p['provider_name'])
-            except KeyError:  
+            except KeyError:
                 continue
 
             result = {}
-            result['tmdb_id']=detail_response['id']
+            result['tmdb_id'] = detail_response['id']
             result['title'] = detail_response['title']
             result['poster'] = detail_response['backdrop_path']
             result['runtime'] = detail_response['runtime']
             result['provider'] = provider_list
             data.append(result)
+
             
         return Response({'message': '영화 목록 검색 성공', 'data': data}, status=HTTP_200_OK)
     
+
     def post(self, request):
         movie_data = {
             'user': 1,
@@ -69,60 +77,67 @@ class MovieSearchView(views.APIView):
 
 class TVSearchView(views.APIView):
     def get(self, request):
-        api_key=TMDB_API_KEY
-        keyword=request.GET.get('keyword')
+        api_key = TMDB_API_KEY
+        keyword = request.GET.get('keyword')
 
         if not keyword:
-            list_url="https://api.themoviedb.org/3/tv/popular?api_key="+api_key+"&language=ko-KR"
+            list_url = "https://api.themoviedb.org/3/tv/popular?api_key="+api_key+"&language=ko-KR"
         else:
-            list_url = "https://api.themoviedb.org/3/search/tv?api_key="+api_key+"&language=ko-KR&query="+keyword
+            list_url = "https://api.themoviedb.org/3/search/tv?api_key=" + \
+                api_key+"&language=ko-KR&query="+keyword
         list_response = requests.get(list_url).json()['results']
-        
-        data = []    
+
+        data = []
 
         for l in list_response:
             tmdb_id = str(l['id'])
-            detail_url = "https://api.themoviedb.org/3/tv/"+tmdb_id+"?api_key="+api_key+"&language=ko-KR"
+            detail_url = "https://api.themoviedb.org/3/tv/" + \
+                tmdb_id+"?api_key="+api_key+"&language=ko-KR"
             detail_response = requests.get(detail_url).json()
 
-            provider_url = "https://api.themoviedb.org/3/tv/"+tmdb_id+"/watch/providers?api_key="+api_key
-            
+            provider_url = "https://api.themoviedb.org/3/tv/" + \
+                tmdb_id+"/watch/providers?api_key="+api_key
+
             try:
-                provider_response = requests.get(provider_url).json()['results']['KR']['flatrate']
+                provider_response = requests.get(provider_url).json()[
+                    'results']['KR']['flatrate']
                 provider_list = []
                 for p in provider_response:
                     provider_list.append(p['provider_name'])
-            except KeyError:  
+            except KeyError:
                 continue
-            
-            season=[]
 
-            for e in range(1,len(detail_response['seasons'])+1):
-                season_detail={}
+            season = []
 
-                season_url = "https://api.themoviedb.org/3/tv/"+tmdb_id+"/season/"+str(e)+"?api_key="+api_key
-                season_detail['season']=e
+            for e in range(1, len(detail_response['seasons'])+1):
+                season_detail = {}
+
+                season_url = "https://api.themoviedb.org/3/tv/" + \
+                    tmdb_id+"/season/"+str(e)+"?api_key="+api_key
+                season_detail['season'] = e
 
                 try:
-                    season_detail['episodes']=len(requests.get(season_url).json()['episodes'])
+                    season_detail['episodes'] = len(
+                        requests.get(season_url).json()['episodes'])
                 except KeyError:
-                    season_detail['episodes']=None
+                    season_detail['episodes'] = None
 
                 season.append(season_detail)
 
             result = {}
 
-            result['tmdb_id']=detail_response['id']
+            result['tmdb_id'] = detail_response['id']
             result['title'] = detail_response['name']
             result['poster'] = detail_response['backdrop_path']
             result['episode_run_time'] = detail_response['episode_run_time'][0]
-            result['season']=season
+            result['season'] = season
             result['provider'] = provider_list
 
             data.append(result)
 
+
         return Response({'message': 'TV 목록 검색 성공', 'data': data}, status=HTTP_200_OK)
-    
+
     def post(self, request):
         tv_data = {
             'user': 1,
@@ -139,8 +154,8 @@ class TVSearchView(views.APIView):
 
         if serializer.is_valid():
             serializer.save()
-            
-            tv_id = serializer.data['id']  
+
+            tv_id = serializer.data['id']
 
             for i in range(serializer.data['total_episode']):
                 episode_data = {'tv': tv_id, 'episode_num': i+1}
@@ -150,7 +165,9 @@ class TVSearchView(views.APIView):
                     episode_serializer.save()
 
 
+
             return Response({'message': 'TV 저장 성공', 'data': serializer.data}, status=HTTP_200_OK)
+
         else:
             return Response({'message': 'TV 저장 실패'}, serializer.errors, status=HTTP_400_BAD_REQUEST)
 
@@ -159,9 +176,11 @@ class MovieListView(views.APIView):
     def get(self, request):
         watching_movies = MovieContent.objects.filter(is_finished=False)
         watched_movies = MovieContent.objects.filter(is_finished=True)
-        
-        watching_movie_serializer = MovieListSerializer(watching_movies, many=True)
-        watched_movie_serializer = MovieListSerializer(watched_movies, many=True)
+
+        watching_movie_serializer = MovieListSerializer(
+            watching_movies, many=True)
+        watched_movie_serializer = MovieListSerializer(
+            watched_movies, many=True)
 
         return Response({'message': '영화 체크리스트 조회 성공', 'data': {'watching': watching_movie_serializer.data, 'watched': watched_movie_serializer.data}}, status=HTTP_200_OK)
 
@@ -188,7 +207,7 @@ class TVListView(views.APIView):
     def get(self, request):
         watching_tv = TVContent.objects.filter(is_finished=False)
         watched_tv = TVContent.objects.filter(is_finished=True)
-        
+
         watching_tv_serializer = MovieListSerializer(watching_tv, many=True)
         watched_tv_serializer = MovieListSerializer(watched_tv, many=True)
 
@@ -220,3 +239,4 @@ class TVDetailView(views.APIView):
         episode_serializer = EpisodeSerializer(episode)
 
         return Response({'message': 'TV 시청 기록 저장 성공', 'data': episode_serializer.data})
+

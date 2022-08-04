@@ -12,5 +12,5 @@ class SubscribingOTT(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     ott = models.CharField(max_length=20)
     fee = models.IntegerField(null=True, blank=True)
-    start_date = models.DateField(null=True, blank=True)
+    pay_date = models.DateField(null=True, blank=True)
     share = models.IntegerField(null=True, blank=True)
