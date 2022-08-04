@@ -22,7 +22,7 @@ class EpisodeSerializer(serializers.ModelSerializer):
 class TVSerializer(serializers.ModelSerializer):
     class Meta:
         model = TVContent
-        fields = ['id', 'user', 'title', 'tmdb_id', 'poster', 'provider', 'runtime', 'season', 'episode', 'added_at', 'is_finished']
+        fields = ['id', 'user', 'title', 'tmdb_id', 'poster', 'provider', 'runtime', 'season', 'total_episode', 'episode_status', 'added_at', 'is_finished']
 
 
 class TVListSerializer(serializers.ModelSerializer):
@@ -36,4 +36,4 @@ class TVDetailSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = TVContent
-        fields = ['id', 'user', 'title', 'tmdb_id', 'poster', 'provider', 'runtime', 'season', 'episode', 'episodes', 'added_at', 'is_finished']
+        fields = ['id', 'user', 'title', 'tmdb_id', 'poster', 'provider', 'runtime', 'season', 'total_episode', 'episode_status', 'episodes', 'added_at', 'is_finished']
