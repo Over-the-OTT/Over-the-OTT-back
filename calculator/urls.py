@@ -6,4 +6,5 @@ app_name = 'calculator'
 
 urlpatterns = [
     path('runtime/', RuntimeView.as_view()),
+    path('days_till/', DaysTillView.as_view()),
 ]

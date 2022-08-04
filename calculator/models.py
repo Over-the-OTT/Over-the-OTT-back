@@ -1,5 +1,5 @@
 from django.db import models
-from account.models import User, SubscribingOTT
+from account.models import SubscribingOTT
 # Create your models here.
 
 
