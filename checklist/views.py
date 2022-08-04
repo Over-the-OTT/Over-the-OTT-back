@@ -52,7 +52,10 @@ class MovieSearchView(views.APIView):
             result['provider'] = provider_list
             data.append(result)
 
+
+            
         return Response({'message': '영화 목록 검색 성공', 'data': data}, status=HTTP_200_OK)
+    
 
     def post(self, request):
         movie_data = {
@@ -133,6 +136,7 @@ class TVSearchView(views.APIView):
 
             data.append(result)
 
+
         return Response({'message': 'TV 목록 검색 성공', 'data': data}, status=HTTP_200_OK)
 
     def post(self, request):
@@ -160,6 +164,7 @@ class TVSearchView(views.APIView):
 
                 if episode_serializer.is_valid():
                     episode_serializer.save()
+
 
             return Response({'message': 'TV 저장 성공', 'data': serializer.data}, status=HTTP_200_OK)
 
@@ -234,3 +239,4 @@ class TVDetailView(views.APIView):
         episode_serializer = EpisodeSerializer(episode)
 
         return Response({'message': 'TV 시청 기록 저장 성공', 'data': episode_serializer.data})
+
