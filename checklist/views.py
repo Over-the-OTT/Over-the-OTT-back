@@ -52,7 +52,7 @@ class MovieSearchView(views.APIView):
             result['provider'] = provider_list
             data.append(result)
 
-        return Response({'message': '영화 목록 조회 성공', 'data': data}, status=HTTP_200_OK)
+        return Response({'message': '영화 목록 검색 성공', 'data': data}, status=HTTP_200_OK)
 
     def post(self, request):
         movie_data = {
@@ -133,7 +133,7 @@ class TVSearchView(views.APIView):
 
             data.append(result)
 
-        return Response({'message': 'TV 목록 조회 성공', 'data': data}, status=HTTP_200_OK)
+        return Response({'message': 'TV 목록 검색 성공', 'data': data}, status=HTTP_200_OK)
 
     def post(self, request):
         tv_data = {
@@ -142,7 +142,7 @@ class TVSearchView(views.APIView):
             'tmdb_id': request.data.get('tmdb_id'),
             'poster': request.data.get('poster'),
             'season': request.data.get('season'),
-            'episode': request.data.get('episode'),
+            'total_episode': request.data.get('total_episode'),
             'provider': request.data.get('provider'),
             'runtime': request.data.get('episode_run_time')
         }
@@ -154,16 +154,17 @@ class TVSearchView(views.APIView):
 
             tv_id = serializer.data['id']
 
-            for i in range(serializer.data['episode']):
+            for i in range(serializer.data['total_episode']):
                 episode_data = {'tv': tv_id, 'episode_num': i+1}
                 episode_serializer = EpisodeSerializer(data=episode_data)
 
                 if episode_serializer.is_valid():
                     episode_serializer.save()
 
-            return Response({'message': '드라마 저장 성공', 'data': serializer.data}, status=HTTP_200_OK)
+            return Response({'message': 'TV 저장 성공', 'data': serializer.data}, status=HTTP_200_OK)
+
         else:
-            return Response({'message': '드라마 저장 실패'}, serializer.errors, status=HTTP_400_BAD_REQUEST)
+            return Response({'message': 'TV 저장 실패'}, serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 
 class MovieListView(views.APIView):
@@ -176,7 +177,7 @@ class MovieListView(views.APIView):
         watched_movie_serializer = MovieListSerializer(
             watched_movies, many=True)
 
-        return Response({'message': '체크리스트 조회 성공', 'data': {'watching': watching_movie_serializer.data, 'watched': watched_movie_serializer.data}}, status=HTTP_200_OK)
+        return Response({'message': '영화 체크리스트 조회 성공', 'data': {'watching': watching_movie_serializer.data, 'watched': watched_movie_serializer.data}}, status=HTTP_200_OK)
 
 
 class MovieDetailView(views.APIView):
@@ -184,7 +185,17 @@ class MovieDetailView(views.APIView):
         movie = get_object_or_404(MovieContent, pk=pk)
         movie_serializer = MovieSerializer(movie)
 
-        return Response({'message': '체크리스트 조회 성공', 'data': movie_serializer.data}, status=HTTP_200_OK)
+        return Response({'message': '영화 체크리스트 상세 조회 성공', 'data': movie_serializer.data}, status=HTTP_200_OK)
+
+    def post(self, request, pk):
+        movie_id = request.data.get('movie_id')
+        movie = get_object_or_404(MovieContent, pk=movie_id)
+
+        movie.is_finished = True
+        movie.save()
+
+        movie_serializer = MovieSerializer(movie)
+        return Response({'message': '영화 시청 기록 저장 성공', 'data': movie_serializer.data})
 
 
 class TVListView(views.APIView):
@@ -195,7 +206,7 @@ class TVListView(views.APIView):
         watching_tv_serializer = MovieListSerializer(watching_tv, many=True)
         watched_tv_serializer = MovieListSerializer(watched_tv, many=True)
 
-        return Response({'message': '체크리스트 조회 성공', 'data': {'watching': watching_tv_serializer.data, 'watched': watched_tv_serializer.data}}, status=HTTP_200_OK)
+        return Response({'message': 'TV 체크리스트 조회 성공', 'data': {'watching': watching_tv_serializer.data, 'watched': watched_tv_serializer.data}}, status=HTTP_200_OK)
 
 
 class TVDetailView(views.APIView):
@@ -203,4 +214,23 @@ class TVDetailView(views.APIView):
         tv = get_object_or_404(TVContent, pk=pk)
         tv_seriallizer = TVDetailSerializer(tv)
 
-        return Response({'message': '드라마 상세 조회 성공', 'data': tv_seriallizer.data}, status=HTTP_200_OK)
+        return Response({'message': 'TV 체크리스트 상세 조회 성공', 'data': tv_seriallizer.data}, status=HTTP_200_OK)
+
+    def post(self, request, pk):
+        episode_id = request.data.get('episode_id')
+        episode = get_object_or_404(Episode, pk=episode_id)
+
+        episode.is_finished = True
+        episode.save()
+
+        tv = get_object_or_404(TVContent, pk=pk)
+        tv.episode_status += 1
+
+        if tv.total_episode == tv.episode_status:
+            tv.is_finished = True
+
+        tv.save()
+
+        episode_serializer = EpisodeSerializer(episode)
+
+        return Response({'message': 'TV 시청 기록 저장 성공', 'data': episode_serializer.data})
