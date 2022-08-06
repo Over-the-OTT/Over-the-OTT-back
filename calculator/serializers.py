@@ -13,3 +13,4 @@ class DaysTillSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubscribingOTT
         fields = ['ott', 'next_pay', 'days_till_pay']
+
