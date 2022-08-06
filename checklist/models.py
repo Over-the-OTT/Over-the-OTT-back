@@ -6,8 +6,11 @@ OTT_CHOICE = (
     ('Netflix', 'Netflix'),
     ('Watcha', 'Watcha'),
     ('Disney Plus', 'Disney Plus'),
-    ('wavve', 'wavve'),
+    ('Wavve', 'Wavve'),
+    ('Prime Video', 'Prime Video'),
+    ('Apple TV', 'Apple TV')
 )
+
 
 class TVContent(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -25,10 +28,13 @@ class TVContent(models.Model):
     def __str__(self):
         return self.title
 
+
 class Episode(models.Model):
-    tv = models.ForeignKey(TVContent, related_name='episodes', on_delete=models.CASCADE)
+    tv = models.ForeignKey(
+        TVContent, related_name='episodes', on_delete=models.CASCADE)
     episode_num = models.IntegerField()
     is_finished = models.BooleanField(default=False)
+
 
 class MovieContent(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

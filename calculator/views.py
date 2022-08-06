@@ -11,3 +11,10 @@ class RuntimeView(views.APIView):
         runtime = Runtime.objects.filter(ott__user=request.user)
         serializer = RuntimeSerializer(runtime, many=True)
         return Response({'message': '런타임 조회 성공', 'data': serializer.data}, status=HTTP_200_OK)
+
+class DaysTillView(views.APIView):
+    def get(self, request):
+        days_till = SubscribingOTT.objects.filter(user=request.user)
+        serializer = DaysTillSerializer(days_till, many=True)
+        return Response({'message': '남은 결제일 조회 성공', 'data': serializer.data}, status=HTTP_200_OK)
+
