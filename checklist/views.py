@@ -1,8 +1,6 @@
-from gc import is_finalized
-from os import stat
 import requests
 
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_list_or_404, get_object_or_404
 
 from rest_framework import views
 from rest_framework.status import *
@@ -211,6 +209,16 @@ class MovieDetailView(views.APIView):
         movie.save()
         return Response({'message': '영화 시청 기록 저장 성공', 'data': movie_serializer.data}, status=HTTP_200_OK)
 
+    def delete(self, request, pk):
+        movie = get_object_or_404(MovieContent, pk=pk)
+        runtime = get_object_or_404(Runtime.objects.filter(
+            ott__user=request.user.id, ott__ott=movie.provider))
+
+        runtime.total_runtime -= movie.runtime
+        runtime.save()
+        movie.delete()
+        return Response({'message': '영화 컨텐츠 삭제 성공'}, status=HTTP_200_OK)
+
 
 class TVListView(views.APIView):
     def get(self, request):
@@ -256,3 +264,31 @@ class TVDetailView(views.APIView):
         tv.save()
 
         return Response({'message': 'TV 시청 기록 저장 성공', 'data': episode_serializer.data}, status=HTTP_200_OK)
+
+    def put(self, request, pk):
+        tv = get_object_or_404(TVContent, pk=pk)
+        episodes = tv.episodes.all()
+        runtime = get_object_or_404(Runtime.objects.filter(
+            ott__user=request.user.id, ott__ott=tv.provider))
+
+        for ep in episodes:
+            ep.is_finished = True
+            ep.save()
+        tv.episode_status = tv.total_episode
+        tv.is_finished = True
+        runtime.total_runtime += tv.runtime * tv.total_episode
+        tv_serializer = TVDetailSerializer(tv)
+        tv.save()
+        runtime.save()
+
+        return Response({'message': 'TV 에피소드 전체 토글 성공', 'data': tv_serializer.data}, status=HTTP_200_OK)
+
+    def delete(self, request, pk):
+        tv = get_object_or_404(TVContent, pk=pk)
+        runtime = get_object_or_404(Runtime.objects.filter(
+            ott__user=request.user.id, ott__ott=tv.provider))
+
+        runtime.total_runtime -= tv.runtime * tv.episode_status
+        runtime.save()
+        tv.delete()
+        return Response({'message': 'TV 컨텐츠 삭제 성공'}, status=HTTP_200_OK)
