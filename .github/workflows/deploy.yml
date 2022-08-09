@@ -1,24 +1,15 @@
 on:
   push:
-    branches: [ develop ]
-  pull_request:
-    branches: [ develop ]
+    branches:
+      - develop
 jobs:
-  heroku_git_deploy_job:
-      runs-on: ubuntu-latest
-      name: Git Deploy job- A job to deploy django app to heroku using git
-      steps:
-        - name: Checkout
-          uses: actions/checkout@v2
-        - name: Create env
-          run: |
-            touch .env
-            echo "${{ secrets.ENV }}" >> .env
-        - name: Heroku Django Deploy
-          uses: nyakaz73/heroku-django-deploy@v0.81
-          with: 
-            heroku_app_name : ${{ secrets.HEROKU_APP_NAME }}
-            heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-            heroku_email_address: 'ehdusla013@gmail.com'
-            use_git: true
-            git_branch: develop
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: akhileshns/heroku-deploy@v3.12.12 # This is the action
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name : ${{ secrets.HEROKU_APP_NAME }}
+          heroku_email_address: 'ehdusla013@gmail.com'
+          branch: "develop"
