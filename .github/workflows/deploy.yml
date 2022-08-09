@@ -11,5 +11,5 @@ jobs:
         with:
           heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
           heroku_app_name : ${{ secrets.HEROKU_APP_NAME }}
-          heroku_email_address: 'ehdusla013@gmail.com'
+          heroku_email: 'ehdusla013@gmail.com'
           branch: "develop"
