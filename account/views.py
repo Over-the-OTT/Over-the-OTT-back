@@ -11,7 +11,8 @@ from django.contrib.auth import logout, login
 
 class SignUpView(views.APIView):
     def post(self, request, format=None):
-        serializer = UserSerializer(data=request.data)
+        serializer = UserSerializer(
+            context={'request': request}, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response({'message': '회원가입 성공', 'data': serializer.data})
@@ -49,9 +50,8 @@ class LogoutView(views.APIView):
 
 class SubscribingOTTView(views.APIView):
     def post(self, request):
-        data = request.data
         serializer = SubscribingOTTSerializer(
-            data=data, many=True)
+            data=request.data, many=True)
         if serializer.is_valid():
             serializer.save()
             return Response({'message': '구독 중인 OTT 생성 성공', 'data': serializer.data}, status=HTTP_200_OK)
