@@ -1,5 +1,5 @@
 from django.db import models
-from account.models import SubscribingOTT
+from account.models import SubscribingOTT, OTT
 
 # Create your models here.
 
@@ -12,9 +12,9 @@ class Runtime(models.Model):
 
     @property
     def won_per_min(self):
-        won_per_min = self.ott.fee / self.total_runtime
+        won_per_min = self.ott.ott.fee / self.total_runtime
         return won_per_min
 
     @property
     def ott_name(self):
-        return self.ott.ott
+        return self.ott.ott.ott

@@ -57,10 +57,18 @@ class User(AbstractUser):
     objects = CustomUserManager()
 
 
+class OTT(models.Model):
+    ott = models.CharField(max_length=20, choices=OTT_CHOICE) 
+    membership = models.CharField(max_length=30)
+    fee = models.IntegerField()
+
+    def __str__(self):
+        return f'{self.ott} ({self.membership})'
+
+
 class SubscribingOTT(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    ott = models.CharField(max_length=20, choices=OTT_CHOICE)
-    fee = models.IntegerField(null=True, blank=True)
+    ott = models.ForeignKey(OTT, on_delete=models.CASCADE)
     pay_date = models.SmallIntegerField(null=True, blank=True)
     share = models.IntegerField(null=True, blank=True)
 
