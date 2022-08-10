@@ -38,7 +38,7 @@ class UserLoginSerializer(serializers.Serializer):
 class SubscribingOTTSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubscribingOTT
-        fields = ['user', 'ott']
+        fields = ['id', 'user', 'ott']
 
 
 class OTTDetailSerializer(serializers.ModelSerializer):
