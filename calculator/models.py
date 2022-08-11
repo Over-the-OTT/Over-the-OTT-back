@@ -10,11 +10,11 @@ class Runtime(models.Model):
     month = models.IntegerField()
     total_runtime = models.IntegerField()
 
-    @property
-    def won_per_min(self):
-        won_per_min = self.ott.ott.fee / self.total_runtime
-        return won_per_min
+    # @property
+    # def won_per_min(self):
+    #     won_per_min = self.ott.ott.fee / self.total_runtime
+    #     return won_per_min
 
-    @property
-    def ott_name(self):
-        return self.ott.ott.ott
+    # @property
+    # def ott_name(self):
+    #     return self.ott.ott.ott

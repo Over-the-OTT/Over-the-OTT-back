@@ -1,11 +1,13 @@
 import requests
 
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_list_or_404, get_object_or_404
 
 from rest_framework import views
 from rest_framework.status import *
 from rest_framework.response import Response
+from calculator.serializers import RuntimeSerializer
 from checklist.models import MovieContent, TVContent
+from calculator.models import Runtime
 
 from overtheott.settings import TMDB_API_KEY
 from .serializers import *
@@ -52,14 +54,11 @@ class MovieSearchView(views.APIView):
             result['provider'] = provider_list
             data.append(result)
 
-
-            
         return Response({'message': '영화 목록 검색 성공', 'data': data}, status=HTTP_200_OK)
-    
 
     def post(self, request):
         movie_data = {
-            'user': 1,
+            'user': request.user.id,
             'title': request.data.get('title'),
             'tmdb_id': request.data.get('tmdb_id'),
             'poster': request.data.get('poster'),
@@ -73,7 +72,7 @@ class MovieSearchView(views.APIView):
             serializer.save()
             return Response({'message': '영화 저장 성공', 'data': serializer.data}, status=HTTP_200_OK)
         else:
-            return Response({'message': '영화 저장 실패'}, serializer.errors, status=HTTP_400_BAD_REQUEST)
+            return Response({'message': '영화 저장 실패', 'data': serializer.errors}, status=HTTP_400_BAD_REQUEST)
 
 
 class TVSearchView(views.APIView):
@@ -130,18 +129,20 @@ class TVSearchView(views.APIView):
             result['tmdb_id'] = detail_response['id']
             result['title'] = detail_response['name']
             result['poster'] = detail_response['backdrop_path']
-            result['episode_run_time'] = detail_response['episode_run_time'][0]
+            if detail_response['episode_run_time']:
+                result['episode_run_time'] = detail_response['episode_run_time'][0]
+            else:
+                result['episode_run_time'] = 0
             result['season'] = season
             result['provider'] = provider_list
 
             data.append(result)
 
-
         return Response({'message': 'TV 목록 검색 성공', 'data': data}, status=HTTP_200_OK)
 
     def post(self, request):
         tv_data = {
-            'user': 1,
+            'user': request.user.id,
             'title': request.data.get('title'),
             'tmdb_id': request.data.get('tmdb_id'),
             'poster': request.data.get('poster'),
@@ -165,11 +166,10 @@ class TVSearchView(views.APIView):
                 if episode_serializer.is_valid():
                     episode_serializer.save()
 
-
             return Response({'message': 'TV 저장 성공', 'data': serializer.data}, status=HTTP_200_OK)
 
         else:
-            return Response({'message': 'TV 저장 실패'}, serializer.errors, status=HTTP_400_BAD_REQUEST)
+            return Response({'message': 'TV 저장 실패', 'data': serializer.errors}, status=HTTP_400_BAD_REQUEST)
 
 
 class MovieListView(views.APIView):
@@ -195,12 +195,29 @@ class MovieDetailView(views.APIView):
     def post(self, request, pk):
         movie_id = request.data.get('movie_id')
         movie = get_object_or_404(MovieContent, pk=movie_id)
+        runtime = get_object_or_404(Runtime.objects.filter(
+            ott__user=request.user.id, ott__ott=movie.provider))
 
-        movie.is_finished = True
-        movie.save()
-
+        if movie.is_finished:
+            movie.is_finished = False
+            runtime.total_runtime -= movie.runtime
+        else:
+            movie.is_finished = True
+            runtime.total_runtime += movie.runtime
+        runtime.save()
         movie_serializer = MovieSerializer(movie)
-        return Response({'message': '영화 시청 기록 저장 성공', 'data': movie_serializer.data})
+        movie.save()
+        return Response({'message': '영화 시청 기록 저장 성공', 'data': movie_serializer.data}, status=HTTP_200_OK)
+
+    def delete(self, request, pk):
+        movie = get_object_or_404(MovieContent, pk=pk)
+        runtime = get_object_or_404(Runtime.objects.filter(
+            ott__user=request.user.id, ott__ott=movie.provider))
+
+        runtime.total_runtime -= movie.runtime
+        runtime.save()
+        movie.delete()
+        return Response({'message': '영화 컨텐츠 삭제 성공'}, status=HTTP_200_OK)
 
 
 class TVListView(views.APIView):
@@ -224,19 +241,54 @@ class TVDetailView(views.APIView):
     def post(self, request, pk):
         episode_id = request.data.get('episode_id')
         episode = get_object_or_404(Episode, pk=episode_id)
+        runtime = get_object_or_404(Runtime.objects.filter(
+            ott__user=request.user.id, ott__ott=episode.tv.provider))
+        tv = episode.tv
 
-        episode.is_finished = True
+        if episode.is_finished:
+            episode.is_finished = False
+            tv.episode_status -= 1
+            runtime.total_runtime -= tv.runtime
+        else:
+            episode.is_finished = True
+            tv.episode_status += 1
+            runtime.total_runtime += tv.runtime
+        runtime.save()
+        episode_serializer = EpisodeSerializer(episode)
         episode.save()
-
-        tv = get_object_or_404(TVContent, pk=pk)
-        tv.episode_status += 1
 
         if tv.total_episode == tv.episode_status:
             tv.is_finished = True
-
+        else:
+            tv.is_finished = False
         tv.save()
 
-        episode_serializer = EpisodeSerializer(episode)
+        return Response({'message': 'TV 시청 기록 저장 성공', 'data': episode_serializer.data}, status=HTTP_200_OK)
 
-        return Response({'message': 'TV 시청 기록 저장 성공', 'data': episode_serializer.data})
+    def put(self, request, pk):
+        tv = get_object_or_404(TVContent, pk=pk)
+        episodes = tv.episodes.all()
+        runtime = get_object_or_404(Runtime.objects.filter(
+            ott__user=request.user.id, ott__ott=tv.provider))
 
+        for ep in episodes:
+            ep.is_finished = True
+            ep.save()
+        tv.episode_status = tv.total_episode
+        tv.is_finished = True
+        runtime.total_runtime += tv.runtime * tv.total_episode
+        tv_serializer = TVDetailSerializer(tv)
+        tv.save()
+        runtime.save()
+
+        return Response({'message': 'TV 에피소드 전체 토글 성공', 'data': tv_serializer.data}, status=HTTP_200_OK)
+
+    def delete(self, request, pk):
+        tv = get_object_or_404(TVContent, pk=pk)
+        runtime = get_object_or_404(Runtime.objects.filter(
+            ott__user=request.user.id, ott__ott=tv.provider))
+
+        runtime.total_runtime -= tv.runtime * tv.episode_status
+        runtime.save()
+        tv.delete()
+        return Response({'message': 'TV 컨텐츠 삭제 성공'}, status=HTTP_200_OK)

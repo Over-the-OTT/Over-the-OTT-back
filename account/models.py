@@ -58,7 +58,7 @@ class User(AbstractUser):
 
 
 class OTT(models.Model):
-    ott = models.CharField(max_length=20, choices=OTT_CHOICE) 
+    ott = models.CharField(max_length=20, choices=OTT_CHOICE)
     membership = models.CharField(max_length=30)
     fee = models.IntegerField()
 
@@ -89,3 +89,7 @@ class SubscribingOTT(models.Model):
     def days_till_pay(self):
         days_till = self.next_pay - datetime.date.today()
         return days_till.days
+
+    @property
+    def pay_amount(self):
+        return self.ott.fee/self.share
