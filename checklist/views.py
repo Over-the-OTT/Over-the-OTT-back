@@ -196,7 +196,7 @@ class MovieDetailView(views.APIView):
         movie_id = request.data.get('movie_id')
         movie = get_object_or_404(MovieContent, pk=movie_id)
         runtime = get_object_or_404(Runtime.objects.filter(
-            ott__user=request.user.id, ott__ott=movie.provider))
+            ott__user=request.user.id, ott__ott__ott=movie.provider))
 
         if movie.is_finished:
             movie.is_finished = False
@@ -212,7 +212,7 @@ class MovieDetailView(views.APIView):
     def delete(self, request, pk):
         movie = get_object_or_404(MovieContent, pk=pk)
         runtime = get_object_or_404(Runtime.objects.filter(
-            ott__user=request.user.id, ott__ott=movie.provider))
+            ott__user=request.user.id, ott__ott__ott=movie.provider))
 
         runtime.total_runtime -= movie.runtime
         runtime.save()
@@ -242,7 +242,7 @@ class TVDetailView(views.APIView):
         episode_id = request.data.get('episode_id')
         episode = get_object_or_404(Episode, pk=episode_id)
         runtime = get_object_or_404(Runtime.objects.filter(
-            ott__user=request.user.id, ott__ott=episode.tv.provider))
+            ott__user=request.user.id, ott__ott__ott=episode.tv.provider))
         tv = episode.tv
 
         if episode.is_finished:
@@ -286,7 +286,7 @@ class TVDetailView(views.APIView):
     def delete(self, request, pk):
         tv = get_object_or_404(TVContent, pk=pk)
         runtime = get_object_or_404(Runtime.objects.filter(
-            ott__user=request.user.id, ott__ott=tv.provider))
+            ott__user=request.user.id, ott__ott__ott=tv.provider))
 
         runtime.total_runtime -= tv.runtime * tv.episode_status
         runtime.save()
