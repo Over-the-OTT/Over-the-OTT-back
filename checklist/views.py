@@ -1,11 +1,12 @@
 import requests
 
-from django.shortcuts import get_list_or_404, get_object_or_404
+from django.shortcuts import get_object_or_404
+from datetime import datetime
 
 from rest_framework import views
 from rest_framework.status import *
 from rest_framework.response import Response
-from calculator.serializers import RuntimeSerializer
+from account.models import SubscribingOTT
 from checklist.models import MovieContent, TVContent
 from calculator.models import Runtime
 
@@ -193,10 +194,14 @@ class MovieDetailView(views.APIView):
         return Response({'message': '영화 체크리스트 상세 조회 성공', 'data': movie_serializer.data}, status=HTTP_200_OK)
 
     def post(self, request, pk):
-        movie_id = request.data.get('movie_id')
-        movie = get_object_or_404(MovieContent, pk=movie_id)
-        runtime = get_object_or_404(Runtime.objects.filter(
-            ott__user=request.user.id, ott__ott=movie.provider))
+        #movie_id = request.data.get('movie_id')
+        movie = get_object_or_404(MovieContent, pk=pk)
+        subsott = get_object_or_404(SubscribingOTT.objects.filter(
+            user=request.user.id, ott__ott=movie.provider))
+        cur_year = datetime.now().year
+        cur_month = datetime.now().month
+        runtime, created = Runtime.objects.get_or_create(
+            ott=subsott, year=cur_year, month=cur_month, defaults={'year': cur_year, 'month': cur_month})
 
         if movie.is_finished:
             movie.is_finished = False
@@ -212,7 +217,7 @@ class MovieDetailView(views.APIView):
     def delete(self, request, pk):
         movie = get_object_or_404(MovieContent, pk=pk)
         runtime = get_object_or_404(Runtime.objects.filter(
-            ott__user=request.user.id, ott__ott=movie.provider))
+            ott__user=request.user.id, ott__ott__ott=movie.provider))
 
         runtime.total_runtime -= movie.runtime
         runtime.save()
@@ -241,8 +246,12 @@ class TVDetailView(views.APIView):
     def post(self, request, pk):
         episode_id = request.data.get('episode_id')
         episode = get_object_or_404(Episode, pk=episode_id)
-        runtime = get_object_or_404(Runtime.objects.filter(
-            ott__user=request.user.id, ott__ott=episode.tv.provider))
+        subsott = get_object_or_404(SubscribingOTT.objects.filter(
+            user=request.user.id, ott__ott=episode.tv.provider))
+        cur_year = datetime.now().year
+        cur_month = datetime.now().month
+        runtime, created = Runtime.objects.get_or_create(
+            ott=subsott, year=cur_year, month=cur_month, defaults={'year': cur_year, 'month': cur_month})
         tv = episode.tv
 
         if episode.is_finished:
@@ -286,7 +295,7 @@ class TVDetailView(views.APIView):
     def delete(self, request, pk):
         tv = get_object_or_404(TVContent, pk=pk)
         runtime = get_object_or_404(Runtime.objects.filter(
-            ott__user=request.user.id, ott__ott=tv.provider))
+            ott__user=request.user.id, ott__ott__ott=tv.provider))
 
         runtime.total_runtime -= tv.runtime * tv.episode_status
         runtime.save()
