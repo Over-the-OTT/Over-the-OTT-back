@@ -65,7 +65,7 @@ class SubscribingOTTView(views.APIView):
         return Response({'message': '구독 중인 OTT 생성 실패', 'error': serializer.errors}, status=HTTP_400_BAD_REQUEST)
 
     def get(self, request):
-        otts = SubscribingOTT.objects.filter(user=request.user)
+        otts = SubscribingOTT.objects.all()
         serializer = SubscribingOTTSerializer(otts, many=True)
         return Response({'message': '구독 중인 OTT 조회 성공', 'data': serializer.data}, status=HTTP_200_OK)
 
