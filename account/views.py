@@ -53,7 +53,7 @@ class SubscribingOTTView(views.APIView):
         serializer = SubscribingOTTSerializer(
             data=request.data, many=True)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(user=request.user)
             return Response({'message': '구독 중인 OTT 생성 성공', 'data': serializer.data}, status=HTTP_200_OK)
         return Response({'message': '구독 중인 OTT 생성 실패', 'error': serializer.errors}, status=HTTP_400_BAD_REQUEST)
 
@@ -61,22 +61,6 @@ class SubscribingOTTView(views.APIView):
         otts = SubscribingOTT.objects.filter(user=request.user)
         serializer = SubscribingOTTSerializer(otts, many=True)
         return Response({'message': '구독 중인 OTT 조회 성공', 'data': serializer.data}, status=HTTP_200_OK)
-
-    def put(self, request):
-        data = request.data
-        instances = []
-        for ott in data:
-            obj = get_object_or_404(SubscribingOTT, id=ott['id'])
-            obj.id = ott['id']
-            obj.user = request.user
-            obj.fee = ott['fee']
-            obj.pay_date = ott['pay_date']
-            obj.share = ott['share']
-            obj.save()
-            instances.append(obj)
-        serializer = OTTDetailSerializer(
-            instances, many=True, partial=True)
-        return Response({'messsage': '상세 구독 정보 입력 성공', 'data': serializer.data}, status=HTTP_200_OK)
 
 
 class SubsOTTDetailView(views.APIView):

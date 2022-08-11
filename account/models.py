@@ -58,7 +58,7 @@ class User(AbstractUser):
 
 
 class OTT(models.Model):
-    ott = models.CharField(max_length=20, choices=OTT_CHOICE) 
+    ott = models.CharField(max_length=20, choices=OTT_CHOICE)
     membership = models.CharField(max_length=30)
     fee = models.IntegerField()
 
