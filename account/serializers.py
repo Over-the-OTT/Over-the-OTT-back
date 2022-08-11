@@ -34,10 +34,17 @@ class UserLoginSerializer(serializers.Serializer):
             raise serializers.ValidationError()
 
 
+class OTTSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OTT
+        fields = ['id', 'ott', 'membership', 'fee']
+
+
 class SubscribingOTTSerializer(serializers.ModelSerializer):
+    ott = OTTSerializer(read_only=True)
     class Meta:
         model = SubscribingOTT
-        fields = ['id', 'user', 'ott']
+        fields = ['id', 'user', 'ott', 'pay_date', 'share']
 
 
 class OTTDetailSerializer(serializers.ModelSerializer):
