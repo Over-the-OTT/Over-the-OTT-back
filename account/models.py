@@ -93,3 +93,6 @@ class SubscribingOTT(models.Model):
     @property
     def pay_amount(self):
         return self.ott.fee/self.share
+
+    def __str__(self):
+        return f'{self.ott.ott}'
