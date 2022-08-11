@@ -9,4 +9,5 @@ urlpatterns = [
     path('logout/', LogoutView.as_view()),
     path('addott/', SubscribingOTTView.as_view()),
     path('addott/<int:pk>/', SubsOTTDetailView.as_view()),
+    path('ott/', OTTView.as_view()),
 ]
