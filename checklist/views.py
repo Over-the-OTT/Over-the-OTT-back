@@ -59,7 +59,7 @@ class MovieSearchView(views.APIView):
 
     def post(self, request):
         movie_data = {
-            'user': request.user.id,
+            'user': 1,
             'title': request.data.get('title'),
             'tmdb_id': request.data.get('tmdb_id'),
             'poster': request.data.get('poster'),
@@ -143,7 +143,7 @@ class TVSearchView(views.APIView):
 
     def post(self, request):
         tv_data = {
-            'user': request.user.id,
+            'user': 1,
             'title': request.data.get('title'),
             'tmdb_id': request.data.get('tmdb_id'),
             'poster': request.data.get('poster'),
@@ -194,7 +194,6 @@ class MovieDetailView(views.APIView):
         return Response({'message': '영화 체크리스트 상세 조회 성공', 'data': movie_serializer.data}, status=HTTP_200_OK)
 
     def post(self, request, pk):
-        #movie_id = request.data.get('movie_id')
         movie = get_object_or_404(MovieContent, pk=pk)
         subsott = get_object_or_404(SubscribingOTT.objects.filter(
             user=request.user.id, ott__ott=movie.provider))
@@ -278,7 +277,7 @@ class TVDetailView(views.APIView):
         tv = get_object_or_404(TVContent, pk=pk)
         episodes = tv.episodes.all()
         runtime = get_object_or_404(Runtime.objects.filter(
-            ott__user=request.user.id, ott__ott__ott=tv.provider))
+            ott__user=1, ott__ott__ott=tv.provider))  # ott__user=request.user.id
 
         for ep in episodes:
             ep.is_finished = True
@@ -295,7 +294,7 @@ class TVDetailView(views.APIView):
     def delete(self, request, pk):
         tv = get_object_or_404(TVContent, pk=pk)
         runtime = get_object_or_404(Runtime.objects.filter(
-            ott__user=request.user.id, ott__ott__ott=tv.provider))
+            ott__user=1, ott__ott__ott=tv.provider))  # ott__user=request.user.id
 
         runtime.total_runtime -= tv.runtime * tv.episode_status
         runtime.save()
