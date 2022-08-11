@@ -50,16 +50,13 @@ class SubscribingOTTSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubscribingOTT
         fields = ['id', 'user', 'ott', 'ott_name',
-                  'membership', 'pay_date', 'share']
+                  'membership', 'pay_date', 'pay_amount', 'share']
 
     def create(self, validated_data):
         ottname = validated_data.pop('ott_name')
-        print(ottname)
         membership = validated_data.pop('membership')
-        print(membership)
         ott = get_object_or_404(OTT.objects.filter(
             ott=ottname, membership=membership))
-        print(ott)
         validated_data['ott'] = ott
         subott = SubscribingOTT.objects.create(**validated_data)
         subott.save()
@@ -69,4 +66,4 @@ class SubscribingOTTSerializer(serializers.ModelSerializer):
 class OTTDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = SubscribingOTT
-        fields = ['id', 'user', 'ott', 'fee', 'pay_date', 'share']
+        fields = ['id', 'user', 'ott', 'pay_date', 'share']
