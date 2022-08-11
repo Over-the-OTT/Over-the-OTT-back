@@ -269,7 +269,7 @@ class TVDetailView(views.APIView):
         tv = get_object_or_404(TVContent, pk=pk)
         episodes = tv.episodes.all()
         runtime = get_object_or_404(Runtime.objects.filter(
-            ott__user=request.user.id, ott__ott=tv.provider))
+            ott__user=request.user.id, ott__ott__ott=tv.provider))
 
         for ep in episodes:
             ep.is_finished = True

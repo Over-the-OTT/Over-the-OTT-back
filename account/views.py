@@ -48,6 +48,13 @@ class LogoutView(views.APIView):
         return Response({'message': "로그아웃 성공"}, status=HTTP_200_OK)
 
 
+class OTTView(views.APIView):
+    def get(self, request):
+        otts = OTT.objects.all()
+        serializer = OTTSerializer(otts, many=True)
+        return Response({'message': 'OTT 목록 조회 성공', 'data': serializer.data}, status=HTTP_200_OK)
+
+
 class SubscribingOTTView(views.APIView):
     def post(self, request):
         serializer = SubscribingOTTSerializer(
