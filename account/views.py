@@ -25,6 +25,8 @@ class SignUpView(views.APIView):
 
     def patch(self, request):
         user = User.objects.get(pk=request.user.id)
+        if user is None:
+            return Response({'message': 'username 입력 실패', 'data': 'id가 1인 유저가 존재하지 않습니다'}, status=HTTP_400_BAD_REQUEST)
         serializer = UserSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
