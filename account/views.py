@@ -16,7 +16,7 @@ class SignUpView(views.APIView):
         if serializer.is_valid():
             serializer.save()
             return Response({'message': '회원가입 성공', 'data': serializer.data})
-        return Response({'message': '회원가입 실패', 'error': serializer.errors})
+        return Response({'message': '회원가입 실패', 'data': serializer.errors})
 
     def get(self, request):
         users = User.objects.all()
@@ -62,7 +62,7 @@ class SubscribingOTTView(views.APIView):
         if serializer.is_valid():
             serializer.save()  # user=request.user
             return Response({'message': '구독 중인 OTT 생성 성공', 'data': serializer.data}, status=HTTP_200_OK)
-        return Response({'message': '구독 중인 OTT 생성 실패', 'error': serializer.errors}, status=HTTP_400_BAD_REQUEST)
+        return Response({'message': '구독 중인 OTT 생성 실패', 'data': serializer.errors}, status=HTTP_400_BAD_REQUEST)
 
     def get(self, request):
         otts = SubscribingOTT.objects.all()
@@ -78,7 +78,7 @@ class SubsOTTDetailView(views.APIView):
             serializer.save()
             return Response({
                 'message': '구독 중인 ott 수정 성공', 'data': serializer.data}, status=HTTP_200_OK)
-        return Response({'message': '구독 중인 ott 수정 실패', 'error': serializer.errors}, status=HTTP_400_BAD_REQUEST)
+        return Response({'message': '구독 중인 ott 수정 실패', 'data': serializer.errors}, status=HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
         ott = get_object_or_404(SubscribingOTT, pk=pk)
