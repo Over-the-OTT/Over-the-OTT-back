@@ -51,6 +51,7 @@ class SubscribingOTTSerializer(serializers.ModelSerializer):
         model = SubscribingOTT
         fields = ['id', 'user', 'ott', 'ott_name',
                   'membership', 'pay_date', 'pay_amount', 'share']
+        extra_kwargs = {"ott": {"required": False, "allow_null": True}}
 
     def create(self, validated_data):
         ottname = validated_data.pop('ott_name')
