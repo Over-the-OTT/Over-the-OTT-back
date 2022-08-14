@@ -50,7 +50,7 @@ class MovieSearchView(views.APIView):
             result = {}
             result['tmdb_id'] = detail_response['id']
             result['title'] = detail_response['title']
-            result['poster'] = detail_response['backdrop_path']
+            result['poster'] = detail_response['poster_path']
             result['runtime'] = detail_response['runtime']
             result['provider'] = provider_list
             data.append(result)
@@ -129,7 +129,7 @@ class TVSearchView(views.APIView):
 
             result['tmdb_id'] = detail_response['id']
             result['title'] = detail_response['name']
-            result['poster'] = detail_response['backdrop_path']
+            result['poster'] = detail_response['poster_path']
             if detail_response['episode_run_time']:
                 result['episode_run_time'] = detail_response['episode_run_time'][0]
             else:

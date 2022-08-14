@@ -68,7 +68,7 @@ class OTT(models.Model):
 
 class SubscribingOTT(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    ott = models.ForeignKey(OTT, on_delete=models.CASCADE)
+    ott = models.ForeignKey(OTT, on_delete=models.CASCADE, null=True)
     pay_date = models.SmallIntegerField(null=True, blank=True)
     share = models.IntegerField(null=True, blank=True)
 
