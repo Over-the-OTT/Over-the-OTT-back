@@ -293,7 +293,7 @@ class TVDetailView(views.APIView):
 
     def delete(self, request, pk):
         tv = get_object_or_404(TVContent, pk=pk)
-        runtime = (Runtime.objects.filter(
+        runtime = get_object_or_404(Runtime.objects.filter(
             ott__user=1, ott__ott__ott=tv.provider))  # ott__user=request.user.id
 
         runtime.total_runtime -= tv.runtime * tv.episode_status
