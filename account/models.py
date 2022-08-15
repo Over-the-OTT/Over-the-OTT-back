@@ -95,4 +95,4 @@ class SubscribingOTT(models.Model):
         return self.ott.fee/self.share
 
     def __str__(self):
-        return f'{self.ott.ott}'
+        return f'{self.ott.ott} ({self.user})'
