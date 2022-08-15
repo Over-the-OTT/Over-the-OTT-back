@@ -229,8 +229,8 @@ class TVListView(views.APIView):
         watching_tv = TVContent.objects.filter(is_finished=False)
         watched_tv = TVContent.objects.filter(is_finished=True)
 
-        watching_tv_serializer = MovieListSerializer(watching_tv, many=True)
-        watched_tv_serializer = MovieListSerializer(watched_tv, many=True)
+        watching_tv_serializer = TVListSerializer(watching_tv, many=True)
+        watched_tv_serializer = TVListSerializer(watched_tv, many=True)
 
         return Response({'message': 'TV 체크리스트 조회 성공', 'data': {'watching': watching_tv_serializer.data, 'watched': watched_tv_serializer.data}}, status=HTTP_200_OK)
 
