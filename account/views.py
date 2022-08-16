@@ -60,7 +60,7 @@ class SubscribingOTTView(views.APIView):
         serializer = SubscribingOTTSerializer(
             data=request.data, many=True)
         if serializer.is_valid():
-            serializer.save()  # user=request.user
+            serializer.save(user=request.user)
             return Response({'message': '구독 중인 OTT 생성 성공', 'data': serializer.data}, status=HTTP_200_OK)
         return Response({'message': '구독 중인 OTT 생성 실패', 'data': serializer.errors}, status=HTTP_400_BAD_REQUEST)
 

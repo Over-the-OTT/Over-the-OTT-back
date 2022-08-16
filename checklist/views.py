@@ -196,7 +196,7 @@ class MovieDetailView(views.APIView):
     def post(self, request, pk):
         movie = get_object_or_404(MovieContent, pk=pk)
         subsott = get_object_or_404(SubscribingOTT.objects.filter(
-            user=1, ott__ott=movie.provider))  # user=request.user.id
+            user=request.user.id, ott__ott=movie.provider))
         cur_year = datetime.now().year
         cur_month = datetime.now().month
         runtime, created = Runtime.objects.get_or_create(
@@ -216,7 +216,7 @@ class MovieDetailView(views.APIView):
     def delete(self, request, pk):
         movie = get_object_or_404(MovieContent, pk=pk)
         runtime = get_object_or_404(Runtime.objects.filter(
-            ott__user=1, ott__ott__ott=movie.provider))  # ott__user=request.user.id
+            ott__user=request.user.id, ott__ott__ott=movie.provider))  # ott__user=request.user.id
 
         runtime.total_runtime -= movie.runtime
         runtime.save()
@@ -246,7 +246,7 @@ class TVDetailView(views.APIView):
         episode_id = request.data.get('episode_id')
         episode = get_object_or_404(Episode, pk=episode_id)
         subsott = get_object_or_404(SubscribingOTT.objects.filter(
-            user=1, ott__ott=episode.tv.provider))  # user=request.user.id
+            user=request.user.id, ott__ott=episode.tv.provider))  # user=request.user.id
         cur_year = datetime.now().year
         cur_month = datetime.now().month
         runtime, created = Runtime.objects.get_or_create(
@@ -277,7 +277,7 @@ class TVDetailView(views.APIView):
         tv = get_object_or_404(TVContent, pk=pk)
         episodes = tv.episodes.all()
         runtime = get_object_or_404(Runtime.objects.filter(
-            ott__user=1, ott__ott__ott=tv.provider))  # ott__user=request.user.id
+            ott__user=request.user.id, ott__ott__ott=tv.provider))  # ott__user=request.user.id
 
         for ep in episodes:
             ep.is_finished = True
@@ -294,7 +294,7 @@ class TVDetailView(views.APIView):
     def delete(self, request, pk):
         tv = get_object_or_404(TVContent, pk=pk)
         runtime = get_object_or_404(Runtime.objects.filter(
-            ott__user=1, ott__ott__ott=tv.provider))  # ott__user=request.user.id
+            ott__user=request.user.id, ott__ott__ott=tv.provider))  # ott__user=request.user.id
 
         runtime.total_runtime -= tv.runtime * tv.episode_status
         runtime.save()
