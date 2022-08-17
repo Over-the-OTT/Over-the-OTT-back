@@ -66,9 +66,9 @@ CORS_ALLOWED_ORIGINS = [
     'https://gchaewon.github.io/'
 ]
 
-CSRF_COOKIE_SAMESITE = 'Strict'
-SESSION_COOKIE_SAMESITE = 'Strict'
-CSRF_COOKIE_HTTPONLY = False  # False since we will grab it via universal-cookies
+CSRF_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_HTTPONLY = True
 
 MIDDLEWARE = [
