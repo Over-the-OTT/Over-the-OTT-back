@@ -1,10 +1,12 @@
+from os import access
 from django.shortcuts import get_object_or_404, render
+from django.contrib.auth import logout, login
 from .serializers import *
 from .models import *
 from rest_framework import views, generics
 from rest_framework.response import Response
 from rest_framework.status import *
-from django.contrib.auth import logout, login
+from rest_framework_simplejwt.tokens import RefreshToken
 
 # Create your views here.
 
@@ -34,11 +36,9 @@ class SignUpView(views.APIView):
 
 class LoginView(views.APIView):
     def post(self, request):
-        serializer = UserLoginSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.validated_data
-            login(request, user)
-            return Response({'message': "로그인 성공", 'data': serializer.data}, status=HTTP_200_OK)
+        serializer = UserLoginSerializer(data=request.data) 
+        if serializer.is_valid(): 
+            return Response({'message': "로그인 성공", 'data': serializer.validated_data}, status=HTTP_200_OK)
         return Response({'message': "로그인 실패", 'data': serializer.errors}, status=HTTP_400_BAD_REQUEST)
 
 
