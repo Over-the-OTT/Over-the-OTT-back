@@ -30,9 +30,8 @@ class UserLoginSerializer(serializers.Serializer):
         if User.objects.filter(email=email).exists():
             user = User.objects.get(email=email)
             if not user.check_password(password):
-                raise serializers.ValidationError()
+                raise serializers.ValidationError('잘못된 비밀번호')
             else:
-
                 token = RefreshToken.for_user(user)
                 refresh = str(token)
                 access = str(token.access_token)
@@ -44,7 +43,7 @@ class UserLoginSerializer(serializers.Serializer):
 
                 return data
         else:
-            raise serializers.ValidationError()
+            raise serializers.ValidationError('존재하지 않는 유저')
 
 
 class OTTSerializer(serializers.ModelSerializer):

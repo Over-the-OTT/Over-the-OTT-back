@@ -26,7 +26,7 @@ class SignUpView(views.APIView):
         return Response({'message': '유저 목록 조회 성공', 'data': serializer.data}, status=HTTP_200_OK)
 
     def patch(self, request):
-        user = User.objects.get(id=1)
+        user = User.objects.get(id=request.user.id)
         serializer = UserSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
