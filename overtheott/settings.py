@@ -58,6 +58,7 @@ REST_FRAMEWORK = {
 }
 
 CORS_ALLOW_CREDENTIALS = True
+CORS_EXPOSE_HEADERS = ['Content-Type', 'X-CSRFToken']
 CORS_ALLOWED_ORIGINS = [
     'https://over-the-ott.herokuapp.com',
     'http://127.0.0.1:8000',
@@ -66,8 +67,8 @@ CORS_ALLOWED_ORIGINS = [
     'https://gchaewon.github.io/'
 ]
 
-CSRF_COOKIE_SAMESITE = 'None'
-SESSION_COOKIE_SAMESITE = 'None'
+CSRF_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_HTTPONLY = True
 
