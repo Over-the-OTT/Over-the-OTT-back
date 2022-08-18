@@ -38,7 +38,8 @@ class UserLoginSerializer(serializers.Serializer):
 
                 data = {
                     'user': user.email,
-                    'access_token': access
+                    'access_token': access,
+                    'username': user.username
                 }
 
                 return data
