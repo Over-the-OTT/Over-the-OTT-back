@@ -7,9 +7,9 @@ OTT_CHOICE = (
     ('Netflix', 'Netflix'),
     ('Watcha', 'Watcha'),
     ('Disney Plus', 'Disney Plus'),
-    ('Wavve', 'Wavve'),
-    ('Prime Video', 'Prime Video'),
-    ('Apple TV', 'Apple TV')
+    ('wavve', 'Wavve'),
+    ('Amazone Prime Video', 'Amazone Prime Video'),
+    ('Apple TV Plus', 'Apple TV Plus')
 )
 
 # Create your models here.

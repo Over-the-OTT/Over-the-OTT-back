@@ -2,13 +2,14 @@ import re
 from django.db import models
 from account.models import User
 
+
 OTT_CHOICE = (
     ('Netflix', 'Netflix'),
     ('Watcha', 'Watcha'),
     ('Disney Plus', 'Disney Plus'),
-    ('Wavve', 'Wavve'),
-    ('Prime Video', 'Prime Video'),
-    ('Apple TV', 'Apple TV')
+    ('wavve', 'Wavve'),
+    ('Amazon Prime Video', 'Amazon Prime Video'),
+    ('Apple TV Plus', 'Apple TV Plus')
 )
 
 
