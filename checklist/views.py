@@ -221,8 +221,8 @@ class MovieDetailView(views.APIView):
             ott__user=request.user.id, ott__ott__ott=movie.provider)  # ott__user=request.user.id
 
         if movie.is_finished and runtime.exists():
-            runtime.total_runtime -= movie.runtime
-            runtime.save()
+            runtime[0].total_runtime -= movie.runtime
+            runtime[0].save()
 
         movie.delete()
         return Response({'message': '영화 컨텐츠 삭제 성공'}, status=HTTP_200_OK)
@@ -293,7 +293,6 @@ class TVDetailView(views.APIView):
         tv_serializer = TVDetailSerializer(tv)
         tv.save()
         runtime.save()
-
         return Response({'message': 'TV 에피소드 전체 토글 성공', 'data': tv_serializer.data}, status=HTTP_200_OK)
 
     def delete(self, request, pk):
@@ -302,8 +301,8 @@ class TVDetailView(views.APIView):
             ott__user=request.user.id, ott__ott__ott=tv.provider)  # ott__user=request.user.id
 
         if tv.episode_status > 0 and runtime.exists():
-            runtime.total_runtime -= tv.runtime * tv.episode_status
-            runtime.save()
+            runtime[0].total_runtime -= tv.runtime * tv.episode_status
+            runtime[0].save()
 
         tv.delete()
         return Response({'message': 'TV 컨텐츠 삭제 성공'}, status=HTTP_200_OK)
