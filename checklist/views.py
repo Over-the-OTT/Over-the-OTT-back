@@ -59,7 +59,7 @@ class MovieSearchView(views.APIView):
 
     def post(self, request):
         movie_data = {
-            'user': 1,
+            'user': request.user.id,
             'title': request.data.get('title'),
             'tmdb_id': request.data.get('tmdb_id'),
             'poster': request.data.get('poster'),
@@ -143,7 +143,7 @@ class TVSearchView(views.APIView):
 
     def post(self, request):
         tv_data = {
-            'user': 1,
+            'user': request.user.id,
             'title': request.data.get('title'),
             'tmdb_id': request.data.get('tmdb_id'),
             'poster': request.data.get('poster'),

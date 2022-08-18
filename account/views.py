@@ -24,7 +24,7 @@ class SignUpView(views.APIView):
         return Response({'message': '유저 목록 조회 성공', 'data': serializer.data}, status=HTTP_200_OK)
 
     def patch(self, request):
-        user = User.objects.get(id=1)
+        user = User.objects.get(request.user)
         serializer = UserSerializer(user, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
@@ -65,7 +65,7 @@ class SubscribingOTTView(views.APIView):
         return Response({'message': '구독 중인 OTT 생성 실패', 'data': serializer.errors}, status=HTTP_400_BAD_REQUEST)
 
     def get(self, request):
-        otts = SubscribingOTT.objects.all()
+        otts = SubscribingOTT.objects.filter(user=request.user)
         serializer = SubscribingOTTSerializer(otts, many=True)
         return Response({'message': '구독 중인 OTT 조회 성공', 'data': serializer.data}, status=HTTP_200_OK)
 
