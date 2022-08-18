@@ -220,7 +220,7 @@ class MovieDetailView(views.APIView):
         runtime = Runtime.objects.filter(
             ott__user=request.user.id, ott__ott__ott=movie.provider)  # ott__user=request.user.id
 
-        if runtime.exists():
+        if movie.is_finished and runtime.exists():
             runtime.total_runtime -= movie.runtime
             runtime.save()
 
@@ -301,10 +301,9 @@ class TVDetailView(views.APIView):
         runtime = Runtime.objects.filter(
             ott__user=request.user.id, ott__ott__ott=tv.provider)  # ott__user=request.user.id
 
-        if runtime.exists():
-            if tv.episode_status > 0:
-                runtime.total_runtime -= tv.runtime * tv.episode_status
-                runtime.save()
+        if tv.episode_status > 0 and runtime.exists():
+            runtime.total_runtime -= tv.runtime * tv.episode_status
+            runtime.save()
 
         tv.delete()
         return Response({'message': 'TV 컨텐츠 삭제 성공'}, status=HTTP_200_OK)
