@@ -1,5 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
+from rest_framework_simplejwt.tokens import RefreshToken
 from .models import *
 from django.contrib.auth import login
 
@@ -29,11 +30,20 @@ class UserLoginSerializer(serializers.Serializer):
         if User.objects.filter(email=email).exists():
             user = User.objects.get(email=email)
             if not user.check_password(password):
-                raise serializers.ValidationError()
+                raise serializers.ValidationError('잘못된 비밀번호')
             else:
-                return user
+                token = RefreshToken.for_user(user)
+                refresh = str(token)
+                access = str(token.access_token)
+
+                data = {
+                    'user': user.email,
+                    'access_token': access
+                }
+
+                return data
         else:
-            raise serializers.ValidationError()
+            raise serializers.ValidationError('존재하지 않는 유저')
 
 
 class OTTSerializer(serializers.ModelSerializer):
