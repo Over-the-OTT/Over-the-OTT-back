@@ -19,6 +19,3 @@ class Runtime(models.Model):
     @property
     def ott_name(self):
         return self.ott.ott.ott
-
-    def __str__(self):
-        return f'{self.ott_name}'
