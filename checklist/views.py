@@ -175,8 +175,10 @@ class TVSearchView(views.APIView):
 
 class MovieListView(views.APIView):
     def get(self, request):
-        watching_movies = MovieContent.objects.filter(is_finished=False)
-        watched_movies = MovieContent.objects.filter(is_finished=True)
+        watching_movies = MovieContent.objects.filter(
+            is_finished=False, user=request.user)
+        watched_movies = MovieContent.objects.filter(
+            is_finished=True, user=request.user)
 
         watching_movie_serializer = MovieListSerializer(
             watching_movies, many=True)
@@ -226,8 +228,10 @@ class MovieDetailView(views.APIView):
 
 class TVListView(views.APIView):
     def get(self, request):
-        watching_tv = TVContent.objects.filter(is_finished=False)
-        watched_tv = TVContent.objects.filter(is_finished=True)
+        watching_tv = TVContent.objects.filter(
+            is_finished=False, user=request.user)
+        watched_tv = TVContent.objects.filter(
+            is_finished=True, user=request.user)
 
         watching_tv_serializer = TVListSerializer(watching_tv, many=True)
         watched_tv_serializer = TVListSerializer(watched_tv, many=True)
