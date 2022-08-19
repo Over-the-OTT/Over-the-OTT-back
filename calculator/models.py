@@ -9,7 +9,7 @@ class Runtime(models.Model):
         SubscribingOTT, on_delete=models.CASCADE, related_name='runtimes')
     year = models.IntegerField()
     month = models.IntegerField()
-    total_runtime = models.IntegerField(default=0)
+    total_runtime = models.IntegerField(default=1)
 
     @property
     def won_per_min(self):

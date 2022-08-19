@@ -281,8 +281,12 @@ class TVDetailView(views.APIView):
     def put(self, request, pk):
         tv = get_object_or_404(TVContent, pk=pk)
         episodes = tv.episodes.all()
-        runtime = get_object_or_404(Runtime.objects.filter(
-            ott__user=request.user.id, ott__ott__ott=tv.provider))  # ott__user=request.user.id
+        subsott = get_object_or_404(SubscribingOTT.objects.filter(
+            user=request.user.id, ott__ott=tv.provider))  # user=request.user.id
+        cur_year = datetime.now().year
+        cur_month = datetime.now().month
+        runtime, created = Runtime.objects.get_or_create(
+            ott=subsott, year=cur_year, month=cur_month, defaults={'year': cur_year, 'month': cur_month})
 
         for ep in episodes:
             ep.is_finished = True
@@ -301,8 +305,10 @@ class TVDetailView(views.APIView):
             ott__user=request.user.id, ott__ott__ott=tv.provider)  # ott__user=request.user.id
 
         if tv.episode_status > 0 and runtime.exists():
-            runtime[0].total_runtime -= tv.runtime * tv.episode_status
-            runtime[0].save()
+            runtime = runtime[0]
+            runtime.total_runtime = (
+                runtime.total_runtime - tv.runtime*tv.episode_status)
+            runtime.save()
 
         tv.delete()
         return Response({'message': 'TV 컨텐츠 삭제 성공'}, status=HTTP_200_OK)
