@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
 import os
+from pickle import TRUE
 import environ
 import dj_database_url
 from pathlib import Path
@@ -70,12 +71,14 @@ SIMPLE_JWT = {
 }
 
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOWED_ORIGINS = [
     'https://over-the-ott.herokuapp.com',
     'http://127.0.0.1:8000',
     'http://localhost:3000',
     'http://127.0.0.1:3000',
     'https://gchaewon.github.io',
+    'https://over-the-ott-front.vercel.app',
 ]
 
 MIDDLEWARE = [
