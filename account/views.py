@@ -54,6 +54,14 @@ class OTTView(views.APIView):
         serializer = OTTSerializer(otts, many=True)
         return Response({'message': 'OTT 목록 조회 성공', 'data': serializer.data}, status=HTTP_200_OK)
 
+    def post(self, request):
+        serializer = OTTSerializer(
+            data=request.data, many=True)
+
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response({'message': 'OTT 생성 성공', 'data': serializer.data}, status=HTTP_200_OK)
+
 
 class SubscribingOTTView(views.APIView):
     def post(self, request):
